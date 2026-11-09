@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/weather">
+        <file alias="backgrounds/sky.svg">assets/weather/sky.svg</file>
+        <file alias="icons/clear-day.svg">assets/weather/clear-day.svg</file>
+        <file alias="icons/partly-cloudy-day.svg">assets/weather/partly-cloudy-day.svg</file>
+        <file alias="icons/cloudy.svg">assets/weather/cloudy.svg</file>
+        <file alias="icons/rain.svg">assets/weather/rain.svg</file>
+        <file alias="icons/thunderstorms-rain.svg">assets/weather/thunderstorms-rain.svg</file>
+        <file alias="actions/location.svg">assets/actions/location.svg</file>
+        <file alias="actions/exit.svg">assets/actions/exit.svg</file>
+        <file alias="actions/search.svg">assets/actions/search.svg</file>
+        <file alias="actions/refresh.svg">assets/actions/refresh.svg</file>
+        <file alias="actions/leaf.svg">assets/actions/leaf.svg</file>
+    </qresource>
+</RCC>
