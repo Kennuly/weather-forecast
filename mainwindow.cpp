@@ -108,9 +108,9 @@ MainWindow::MainWindow(QWidget *parent)
     lab8->setAlignment(Qt::AlignHCenter);
 
     metricsPanel = new QWidget(this);
-    metricsPanel->setGeometry(10, 185, 351, 184);
+    metricsPanel->setGeometry(10, 185, 351, 152);
     layout = new QGridLayout(metricsPanel);
-    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setContentsMargins(0, 3, 0, 5);
     layout->setHorizontalSpacing(8);
     layout->setVerticalSpacing(6);
 
