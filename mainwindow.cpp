@@ -154,7 +154,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent* event)
 void MainWindow::mousePressEvent(QMouseEvent* event)
 {
     //globalPos()鼠标当前位置           pos()主窗口当前位置
-    mPos = event->globalPos() - this->pos();
+    mPos = event->globalPos() - this->pos();    //鼠标按下时，相对于窗口左上角的偏移量
 }
 
 void MainWindow::slot_exitapp()
