@@ -1,19 +1,22 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QMenu>
+#include "weatherdata.h"
+
 #include <QAction>
-#include <QContextMenuEvent>
-#include <QLineEdit>
-#include <QTextEdit>
-#include <QFrame>
-#include <QLabel>
-#include <QGridLayout>
-#include <QTableWidget>
-#include <QVector>
 #include <QColor>
+#include <QContextMenuEvent>
+#include <QFrame>
+#include <QGridLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMenu>
+#include <QPoint>
+#include <QTableWidget>
+#include <QTextEdit>
 #include <QToolButton>
+
+class WeatherService;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -23,45 +26,83 @@ QT_END_NAMESPACE
 
 class MainWindow : public QWidget
 {
+    // 使用自定义信号槽的 QObject 子类必须包含 Q_OBJECT。
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow() override;
-private:
-    QWidget* widget;        //窗口
-    QMenu* exitMenu;        //右键退出的菜单
-    QAction* exitAct;       //退出行为
-    QPoint mPos;            //窗口移动需要用的点
-    QLineEdit* lineEdit;    //文本编辑框
-    QTextEdit* textEdit;    //日期标签
 
-    //水平线
+protected:
+    void contextMenuEvent(QContextMenuEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+
+private slots:
+    // private slots 可以通过 connect() 连接按钮点击和 WeatherService 信号。
+    void slot_searchCity();
+    void slot_refreshWeather();
+    void slot_exitapp();
+    void handleWeatherData(const WeatherData& data);
+    void handleWeatherError(const QString& message);
+    void handleLoadingChanged(bool loading);
+
+private:
+    // setupXXX() 方法只负责创建和摆放界面控件。
+    void setupWindow();
+    void setupSearchControls();
+    void setupCurrentWeatherInfo();
+    void setupColdIndexPanel();
+    void setupForecastTable();
+    void populateForecastTable(const QVector<ForecastDayData>& forecast);
+
+    QString weatherIconPath(const QString& weatherCode) const;
+    QColor airQualityColor(const QString& airQuality) const;
+    QString airQualityShortText(const QString& airQuality) const;
+    void updateColdIndex(const WeatherData& data);
+    void showQueryError(const QString& message);
+
+    // uic 根据 mainwindow.ui 自动生成 Ui::MainWindow。
+    Ui::MainWindow* ui;
+
+    // 网络请求和 JSON 解析由服务层负责，主窗口只消费 WeatherData。
+    WeatherService* weatherService;
+
+    // 基础窗口和拖动相关成员。
+    QWidget* widget;
+    QMenu* exitMenu;
+    QAction* exitAct;
+    QPoint mPos;
+
+    // 顶部城市搜索框和日期显示。
+    QLineEdit* lineEdit;
+    QTextEdit* textEdit;
+
+    // 左侧分隔线。
     QFrame* line1;
     QFrame* line2;
     QFrame* line3;
 
-    QLabel* lab;        //天气预报标签
-
-    QLabel* lab1;       //湿度title
-    QLabel* lab2;       //湿度
-    QLabel* lab3;       //PM2.5 title
-    QLabel* lab4;       //PM2.5
-    QLabel* lab5;       //风向title
-    QLabel* lab6;       //风向
-    QLabel* lab7;       //风力title
-    QLabel* lab8;       //风力
+    // 左侧湿度、PM2.5、风向和风力指标。
+    QLabel* lab;
+    QLabel* lab1;
+    QLabel* lab2;
+    QLabel* lab3;
+    QLabel* lab4;
+    QLabel* lab5;
+    QLabel* lab6;
+    QLabel* lab7;
+    QLabel* lab8;
     QGridLayout* layout;
     QWidget* metricsPanel;
 
+    // 城市和顶部操作按钮。
     QLabel* cityTit;
     QLabel* city;
-
-    // 顶部搜索和刷新图标按钮
     QToolButton* searchButton;
     QToolButton* refreshButton;
 
-    // 左侧当前天气摘要
+    // 当前天气摘要。
     QLabel* airQualityIcon;
     QLabel* airQualityLabel;
     QLabel* currentTemperature;
@@ -69,51 +110,10 @@ private:
     QLabel* currentCondition;
     QLabel* weatherTip;
 
-    // 底部感冒指数区域
+    // 底部感冒指数与右侧六日预报表格。
     QLabel* coldIndexTitle;
     QLabel* coldIndexPanel;
-
-    // 初始化界面中新增的区域
-    void setupSearchControls();
-    void setupCurrentWeatherInfo();
-    void setupColdIndexPanel();
-
-    // 保存右侧预报表格中每一天的数据
-    struct ForecastItem {
-        QString weekday;          // 星期，如“今天”“明天”
-        QString date;             // 日期，如“02/02”
-        QString airQuality;       // 空气质量
-        QString weather;          // 天气文字，如“阴”
-        QString weatherCode;      // 天气代码，用于匹配资源文件中的图标
-        QString highTemperature;  // 最高温度
-        QString lowTemperature;   // 最低温度
-    };
-
-    QTableWidget* forecastTable;  // 右侧天气预报表格
-
-    // 初始化表格外观
-    void setupForecastTable();
-
-    // 把预报数据填入表格
-    void populateForecastTable(const QVector<ForecastItem>& forecast);
-
-    // 根据天气代码查找资源文件中的图标
-    QString weatherIconPath(const QString& weatherCode) const;
-
-    // 根据空气质量返回对应的显示颜色
-    QColor airQualityColor(const QString& airQuality) const;
-
-
-private:
-    ////重写 Qt 的右键菜单事件
-    Ui::MainWindow *ui;
-
-protected:
-    void contextMenuEvent(QContextMenuEvent* event) override;
-    void mouseMoveEvent(QMouseEvent* event) override;
-    void mousePressEvent(QMouseEvent* event) override;
-private slots:
-    void slot_exitapp();
-    void slot_searchCity();
+    QTableWidget* forecastTable;
 };
+
 #endif // MAINWINDOW_H

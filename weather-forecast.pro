@@ -1,4 +1,4 @@
-QT += widgets
+QT += widgets network
 
 CONFIG += c++17
 
@@ -8,10 +8,13 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    weatherservice.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    weatherdata.h \
+    weatherservice.h
 
 FORMS += \
     mainwindow.ui
